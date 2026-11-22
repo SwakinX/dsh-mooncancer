@@ -1,12 +1,12 @@
 # dsh-mooncancer
 
-MoonCancer（[SwakinX/MoonCancerLauncher](https://github.com/SwakinX/MoonCancerLauncher)，FGO 自动化脚本）的 DeepSeek Harness 插件：把 MoonCancer 本地开放接口 `/v1` 映射为 DSH Agent 工具，并通过 system prompt 注入跨工具的监督者策略——让 Agent 成为 MoonCancer 的**外部监督者**：启动任务、盯终态、出事时介入（观察 / 操作 / 内存修改）。
+MoonCancer（[SwakinX/MoonCancerLauncher](https://github.com/SwakinX/MoonCancerLauncher)，FGO 自动化脚本）的 DeepSeek Harness 插件：把 MoonCancer 本地开放接口 `/v1` 映射为 DSH Agent 工具，并通过 system prompt 注入跨工具的监督者策略——让 Agent 成为 MoonCancer 的**外部监督者**：启动任务、盯终态、出事时介入（观察 / 操作 / 战斗辅组）。
 
 ![icon](icon.png)
 
 ## 功能
 
-- **20 个 `mooncancer_*` 工具**：任务编排、配置方案管理、状态观察、语义战斗操作、内存修改、事件监听等（完整映射见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#工具映射)）。
+- **20 个 `mooncancer_*` 工具**：任务编排、配置方案管理、状态观察、语义战斗操作、战斗辅组、事件监听等（完整映射见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#工具映射)）。
 - **截图直通视觉模型**：截图字节经宿主附件库铸成持久引用，工具结果当轮直出图像内容块，模型直接"看见"画面，无需 `image-read` 二次调用；附件链路不可用时自动退化为落盘 + 路径指引。
 - **监督主循环策略注入**：`task start wait=true` 阻塞至终态，按终态类型（正常/停滞/卡关/熔断/维护…）分派处置，Agent 无需自建轮询循环。
 - **介入模型**：任务运行中 `pause` 即静默全部脚本线程并放行手动操作（API 调用豁免暂停等待），完事 `resume`（10 分钟无请求也会自动恢复）。
@@ -78,7 +78,7 @@ mooncancer_task op=resume            # 恢复（10 分钟无请求也会自动�
 - **截图报「value is not lossless JSON」**：工具返回值里混入了值为 `undefined` 的键（宿主 lossless JSON 校验拒绝）。修复方式：条件展开，有值才携带键。
 - **整轮崩溃报 `Cannot read properties of undefined (reading 'attachmentId')`**：图像内容块的 `attachment` 字段不是附件库签发的合法引用（如自造 base64 块）。图像引用必须来自 `ctx.get('attachments').saveImages`。历史里已持久化非法块的旧会话救不回来，弃用即可。
 - **FUSED 反复但截图看起来正常**：UI 改版（用 `mooncancer_templates` 对比模板）或分辨率不符。
-- **内存修改全失败**：常见原因——之前已修改过、临时地址已失效（`mooncancer_cheat clean` 清地址缓存后重试）；多开时附加了错误的进程（`mooncancer_cheat status` 看候选，`mooncancer_device connect` 带 pid 预登记）；模拟器为安卓 15 版（pymem 失效）。另注意 MuMu 的后台保活会影响**截图**（需关闭）。
+- **战斗辅组全失败**：常见原因——之前已辅组过、临时地址已失效（`mooncancer_cheat clean` 清地址缓存后重试）；多开时附加了错误的进程（`mooncancer_cheat status` 看候选，`mooncancer_device connect` 带 pid 预登记）；模拟器为安卓 15 版（pymem 失效）。另注意 MuMu 的后台保活会影响**截图**（需关闭）。
 
 ## 限制
 
@@ -90,7 +90,7 @@ mooncancer_task op=resume            # 恢复（10 分钟无请求也会自动�
 ## 文档
 
 - [架构与设计](docs/ARCHITECTURE.md)：工具映射表、图像直通链路、宿主契约要点、介入与确认门模型。
-- [能力、规则与边界](docs/RULES.md)：各任务类型能做什么/不能做什么、过主线人工干预清单、内存修改规范、多开与连接技巧。
+- [能力、规则与边界](docs/RULES.md)：各任务类型能做什么/不能做什么、过主线人工干预清单、战斗辅组规范、多开与连接技巧。
 
 ## License
 

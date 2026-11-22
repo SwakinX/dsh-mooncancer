@@ -67,7 +67,7 @@ MoonCancer /v1/shots (JPEG q75)
 
 ## 服务自动拉起
 
-`appDir` 解析顺序：打包版 `MoonCancer.exe --minimized` → 源码仓布局（`.venv/Scripts/python.exe` + 逐级查找 `MoonCancer.py`）。拉起经 PowerShell `Start-Process -Verb RunAs` 提权（pymem 内存修改需要管理员），隐藏窗口、共享并发调用、轮询 `/v1/status` 最多 60s。已知坑：不能用 `detached:true`（提权启动静默失败）；用 `python.exe` 而非 `pythonw`（无控制台会静默崩溃）。
+`appDir` 解析顺序：打包版 `MoonCancer.exe --minimized` → 源码仓布局（`.venv/Scripts/python.exe` + 逐级查找 `MoonCancer.py`）。拉起经 PowerShell `Start-Process -Verb RunAs` 提权（pymem 战斗辅组需要管理员），隐藏窗口、共享并发调用、轮询 `/v1/status` 最多 60s。已知坑：不能用 `detached:true`（提权启动静默失败）；用 `python.exe` 而非 `pythonw`（无控制台会静默崩溃）。
 
 ## 限制
 

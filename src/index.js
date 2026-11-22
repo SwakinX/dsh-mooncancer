@@ -201,9 +201,9 @@ export function apply(ctx, config = {}) {
       '- 复杂机制关是 AI 接管的核心场景：自动战斗反复 STALL/QUEST_STUCK 的本，切 pause + cheat 手动打；卡关检测阈值每方案 quest_stuck_turns（默认 5，0=关闭；boss 长战本调高或关闭防误杀）。',
       '- daily 的关卡选择在配置里（daily_quest/ordeal_quest/grand_quest），一次性换本用 task start 的 config_override、要持久改才 plan_update；daily 耗风暴罐而非 AP，count 不生效（罐尽自然结束）。',
       '- 助战：reisou 最多四种候选礼装检测到即选；含「活动礼装」= 不挑助战；检测到冠位助战时选满足候选两项的。',
-      '- 多开：同一模拟器实例同时只被一个配置占用，撞实例会终止（看 reason 而非 PRECHECK_FAIL）。内存修改的进程选择：mooncancer_cheat status 未附加时附 candidates 候选清单（pid/start 启动时间/owner 占用），多开时先 mooncancer_device connect 带 pid 预登记再跑——附加直接命中该 pid 全程无弹窗（不预登记且多个空闲进程会弹人工选择窗阻塞）；单实例唯一空闲自动直选无需操作。start（启动时间）是辨认进程归属的关键。',
-      '- 模拟器：不要用安卓 15 版（内存修改失效——cheat 全失败先查这个）；分辨率 16:9 ≥1280×720；连接慢报 socket connection broken → 卸载模拟器内 yosemite 应用。',
-      '- 排障：内存修改全失败 → 先查地址缓存是否失效（之前已修改过、临时地址已清：cheat clean 后重试）与多开附加错进程（cheat status 看候选、device connect 带 pid 预登记），再查模拟器版本（安卓 15 版 pymem 失效）；FUSED 反复且截图看起来正常 → UI 改版（用 mooncancer_templates 对比模板）或分辨率不符；MuMu 截图异常 → 关闭后台保活；同名多进程附加弹窗阻塞 → 单实例运行。',
+      '- 多开：同一模拟器实例同时只被一个配置占用，撞实例会终止（看 reason 而非 PRECHECK_FAIL）。战斗辅组的进程选择：mooncancer_cheat status 未附加时附 candidates 候选清单（pid/start 启动时间/owner 占用），多开时先 mooncancer_device connect 带 pid 预登记再跑——附加直接命中该 pid 全程无弹窗（不预登记且多个空闲进程会弹人工选择窗阻塞）；单实例唯一空闲自动直选无需操作。start（启动时间）是辨认进程归属的关键。',
+      '- 模拟器：不要用安卓 15 版（辅组失效——cheat 全失败先查这个）；分辨率 16:9 ≥1280×720；连接慢报 socket connection broken → 卸载模拟器内 yosemite 应用。',
+      '- 排障：辅组全失败 → 先查地址缓存是否失效（之前已辅组过、临时地址已清：cheat clean 后重试）与多开附加错进程（cheat status 看候选、device connect 带 pid 预登记），再查模拟器版本（安卓 15 版 pymem 失效）；FUSED 反复且截图看起来正常 → UI 改版（用 mooncancer_templates 对比模板）或分辨率不符；MuMu 截图异常 → 关闭后台保活；同名多进程附加弹窗阻塞 → 单实例运行。',
       '- 挂机计划（HALT，AP 恢复自动继续）仅用户在 UI 设置，API 无端点；不支持 daily/kidou。',
     ].join('\n'),
   })
@@ -249,7 +249,7 @@ export function apply(ctx, config = {}) {
         throw new Error('MoonCancer 服务未运行，且未配置有效的程序目录（appDir）；请在插件配置中填写 MoonCancer 目录后重试')
       }
       ctx.logger.info(`mooncancer: /v1 不可达，自动拉起（UAC 提权）${launch.cmd}`)
-      // MoonCancer 需要 administrator 权限（pymem 内存修改），经 PowerShell
+      // MoonCancer 需要 administrator 权限（pymem 战斗辅组），经 PowerShell
       // Start-Process -Verb RunAs 提权拉起；用户在 UAC 弹窗确认后进程才启动。
       const quote = (value) => `'${String(value).replace(/'/g, "''")}'`
       const argList = [...launch.args, '--port', String(port ?? 18765)].map(quote).join(',')
@@ -716,7 +716,7 @@ export function apply(ctx, config = {}) {
 
   ctx.tools.register(defineTool({
     name: 'mooncancer_cheat',
-    description: '内存修改原语（战斗接管核心；只在用户明确要求时使用；enhance/kill_all 直接改游戏内存）。状态门：任务运行中且未暂停时 409 TASK_RUNNING（先 task pause）。op=status：附加状态 {attached,pid,valid,patterns_found}（安全可读）；未附加时附 candidates 多开候选清单 [{pid,start,owner,last_used,enabled}]——多开预选第一步（见 mooncancer_device 的 pid 预登记）。op=enhance：我方全体强化 {count? 我方人数 1~64 缺省屏幕检测, atk/hp/hpul/npl? uint32，缺省 8000000/10000000/10000000/0}。op=enhance_from_screen：按屏幕从者信息强化（推荐，不用数人数）。op=kill_all：清空敌方血条（一次只清当前面）。op=clean：清地址缓存。cheat 语义与坑：①位次编号——我方 1~N，敌人接在我方之后、同面从右往左递增；servant_count 小于己方从者数会误杀自己人，宁可偏大。②地址不复用：新战斗开始前先 clean；战斗中发现旧记录先试改、失败再 clean（直接清可能误清本场标志）。③敌人 HP→0=不战而胜；多血条一次只破一管；数值勿超上限（默认 800 万攻/1000 万血是安全区）；npl=0 表示该从者 NP 直接满可立即放宝具。④定位按「等级+攻击力」（我方）/「等级+生命值」（敌方），OCR 有误会改失败——先核对 battle_state；一号位偶尔改不到（特征码遮挡），改其他位或 kill_all。⑤count 缺省检测失败（非战斗界面）→ 400。',
+    description: '战斗辅组原语（基于内存修改的战斗接管核心；只在用户明确要求时使用；enhance/kill_all 直接改游戏内存）。状态门：任务运行中且未暂停时 409 TASK_RUNNING（先 task pause）。op=status：附加状态 {attached,pid,valid,patterns_found}（安全可读）；未附加时附 candidates 多开候选清单 [{pid,start,owner,last_used,enabled}]——多开预选第一步（见 mooncancer_device 的 pid 预登记）。op=enhance：我方全体强化 {count? 我方人数 1~64 缺省屏幕检测, atk/hp/hpul/npl? uint32，缺省 8000000/10000000/10000000/0}。op=enhance_from_screen：按屏幕从者信息强化（推荐，不用数人数）。op=kill_all：清空敌方血条（一次只清当前面）。op=clean：清地址缓存。cheat 语义与坑：①位次编号——我方 1~N，敌人接在我方之后、同面从右往左递增；servant_count 小于己方从者数会误杀自己人，宁可偏大。②地址不复用：新战斗开始前先 clean；战斗中发现旧记录先试改、失败再 clean（直接清可能误清本场标志）。③敌人 HP→0=不战而胜；多血条一次只破一管；数值勿超上限（默认 800 万攻/1000 万血是安全区）；npl=0 表示该从者 NP 直接满可立即放宝具。④定位按「等级+攻击力」（我方）/「等级+生命值」（敌方），OCR 有误会改失败——先核对 battle_state；一号位偶尔改不到（特征码遮挡），改其他位或 kill_all。⑤count 缺省检测失败（非战斗界面）→ 400。',
     parameters: {
       op: { type: 'string', required: true, enum: ['status', 'enhance', 'enhance_from_screen', 'kill_all', 'clean'], description: 'status=附加状态, enhance=我方全体强化, enhance_from_screen=按屏幕从者强化（推荐）, kill_all=清空敌方血条, clean=清空地址缓存。' },
       cfg: cfgParam,
