@@ -1,6 +1,6 @@
 # dsh-mooncancer
 
-MoonCancer（FGO 自动化脚本，见你的 MoonCancer 发行渠道）的 DeepSeek Harness 插件：把 MoonCancer 本地开放接口 `/v1` 映射为 DSH Agent 工具，并通过 system prompt 注入跨工具的监督者策略——让 Agent 成为 MoonCancer 的**外部监督者**：启动任务、盯终态、出事时介入（观察 / 操作 / 内存修改）。
+MoonCancer（[SwakinX/MoonCancerLauncher](https://github.com/SwakinX/MoonCancerLauncher)，FGO 自动化脚本）的 DeepSeek Harness 插件：把 MoonCancer 本地开放接口 `/v1` 映射为 DSH Agent 工具，并通过 system prompt 注入跨工具的监督者策略——让 Agent 成为 MoonCancer 的**外部监督者**：启动任务、盯终态、出事时介入（观察 / 操作 / 内存修改）。
 
 ![icon](icon.png)
 
@@ -24,15 +24,22 @@ MoonCancer（FGO 自动化脚本，见你的 MoonCancer 发行渠道）的 DeepS
 
 ### 方式一：插件管理器从 Git 安装（推荐）
 
-在 DeepSeek Harness 插件管理器中安装本仓库的 Git URL，依赖会自动解析（仅 `@deepseek-ai/schemastery`）。
+在 DeepSeek Harness 插件管理器中安装：
+
+```
+github.com/SwakinX/dsh-mooncancer
+```
+
+依赖会自动解析（仅 `@deepseek-ai/schemastery`）。也可以直接写进 profile 的 `package.json`：
+
+```
+"@local/mooncancer": "github:SwakinX/dsh-mooncancer"
+```
 
 ### 方式二：本地开发
 
 ```powershell
-git clone <本仓库> E:\Github\dsh-mooncancer
-# 在插件管理器中以 link 方式安装本地目录，或手动加进 profile 的 package.json：
-#   "@local/mooncancer": "link:E:/Github/dsh-mooncancer"
-# 并把 "@local/mooncancer" 加入 profile bundles 列表
+git clone https://github.com/SwakinX/dsh-mooncancer E:\Github\dsh-mooncancer
 ```
 
 ## 配置

@@ -3,6 +3,12 @@
   "version": "1.0.0",
   "description": "MoonCancer (FGO automation) plugin for DeepSeek Harness: lets the agent supervise and control FGO automation through the MoonCancer local open API.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SwakinX/dsh-mooncancer.git"
+  },
+  "homepage": "https://github.com/SwakinX/dsh-mooncancer#readme",
+  "bugs": "https://github.com/SwakinX/dsh-mooncancer/issues",
   "type": "module",
   "main": "./src/index.js",
   "exports": {
