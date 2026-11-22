@@ -1,0 +1,12 @@
+# Bundle-level defaults, applied when the plugin is first inserted into a
+# profile. Per-deployment values (token, appDir) belong in your own profile
+# patch layer or the plugin's settings page — do not commit real credentials
+# here.
+- insert:
+    - id: mooncancer
+      name: '@local/mooncancer'
+      config:
+        port: 18765
+        token: ''
+        requestTimeoutMs: 15000
+        appDir: ''

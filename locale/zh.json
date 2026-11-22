@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "MoonCancer",
+    "description": "通过 MoonCancer 本地开放接口，让 Agent 监督与操控 FGO 自动化。",
+    "detail": "README.md"
+  }
+}

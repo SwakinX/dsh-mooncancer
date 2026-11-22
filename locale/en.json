@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "MoonCancer",
+    "description": "Let the agent supervise and control FGO automation through the MoonCancer local open API.",
+    "detail": "README.md"
+  }
+}
