@@ -1,5 +1,5 @@
 {
-  "name": "@local/mooncancer",
+  "name": "@swakinx/dsh-mooncancer",
   "version": "1.0.0",
   "description": "MoonCancer (FGO automation) plugin for DeepSeek Harness: lets the agent supervise and control FGO automation through the MoonCancer local open API.",
   "license": "MIT",
@@ -22,7 +22,6 @@
   },
   "files": [
     "src",
-    "index.js",
     "cordis.patch.yml",
     "locale/*.json",
     "docs",

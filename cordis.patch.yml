@@ -4,7 +4,7 @@
 # here.
 - insert:
     - id: mooncancer
-      name: '@local/mooncancer'
+      name: '@swakinx/dsh-mooncancer'
       config:
         port: 18765
         token: ''

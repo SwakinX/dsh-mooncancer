@@ -33,7 +33,7 @@ github.com/SwakinX/dsh-mooncancer
 依赖会自动解析（仅 `@deepseek-ai/schemastery`）。也可以直接写进 profile 的 `package.json`：
 
 ```
-"@local/mooncancer": "github:SwakinX/dsh-mooncancer"
+"@swakinx/dsh-mooncancer": "github:SwakinX/dsh-mooncancer"
 ```
 
 ### 方式二：本地开发

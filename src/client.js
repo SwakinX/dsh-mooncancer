@@ -4,7 +4,7 @@
  * SettingsFormModel pattern used by official plugin config pages.
  */
 window.__ModuleLoader__.load({
-  id: '@local/mooncancer',
+  id: '@swakinx/dsh-mooncancer',
   factory(require) {
     const React = require('react')
     const h = React.createElement
@@ -114,7 +114,7 @@ window.__ModuleLoader__.load({
         ctx.effect(() => () => { model.dispose() })
         ctx.effect(() => ctx.locale.register(NS, { en, zh }))
         ctx.slots.inject('plugins.bundle.config', () => ctx.slots.register({
-          name: 'plugins.bundle.config', key: '@local/mooncancer', locale: NS,
+          name: 'plugins.bundle.config', key: '@swakinx/dsh-mooncancer', locale: NS,
           inject: () => ({ hooks: { mooncancerForm: state }, ...model.actions() }),
         }, MooncancerConfig))
       },
