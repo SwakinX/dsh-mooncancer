@@ -205,6 +205,12 @@ export function apply(ctx, config = {}) {
       '- 模拟器：不要用安卓 15 版（辅组失效——cheat 全失败先查这个）；分辨率 16:9 ≥1280×720；连接慢报 socket connection broken → 卸载模拟器内 yosemite 应用。',
       '- 排障：辅组全失败 → 先查地址缓存是否失效（之前已辅组过、临时地址已清：cheat clean 后重试）与多开附加错进程（cheat status 看候选、device connect 带 pid 预登记），再查模拟器版本（安卓 15 版 pymem 失效）；FUSED 反复且截图看起来正常 → UI 改版（用 mooncancer_templates 对比模板）或分辨率不符；MuMu 截图异常 → 关闭后台保活；同名多进程附加弹窗阻塞 → 单实例运行。',
       '- 挂机计划（HALT，AP 恢复自动继续）仅用户在 UI 设置，API 无端点；不支持 daily/kidou。',
+      '- 鉴权 401：status 正常、其余接口报「token 无效」= 插件 token 与服务端 config/api.json 不一致（服务升级后常见）——token 可直接在设置里的选项卡复制，让用户更新插件设置（Agent 无工具改 profile 配置）。',
+      '- task start wait=true 可能抛 [object Object] 但任务实际已接受：报错后先查 status/events 再决定重试，盲目重试只会 409 幂等拒绝。',
+      '- Nemu IPC 断连（日志连续 Failed to call nemu_connect, result=0，任务「执行错误」结束且无 shots）= 模拟器实例崩溃：以 adb 端口是否 LISTENING 确诊（MuMuManager 的 is_android_started 可能是残影）；恢复用 MuMuManager control -v <实例编号> shutdown → 等30s → launch（按目标模拟器选实例编号；首次 -502 再试一次）→ 重新 connect 预登记新 pid → kidou 拉起游戏。',
+      '- first 任务不会自动导航：需先回到终端页面 → 迦勒底之门 → 幕间物语（入口坐标不固定，OCR 定位），到位后再 start/resume；运行中导航 = pause → 导航 → resume。',
+      '- 手动战斗：选卡前必须先点攻击按钮（屏幕上没出卡时 tap_card 无效）；tap_card 偶发误开从者/宝具详情页，点右上角 X 关闭；F 键只能取消带「确定/取消」两按钮的弹窗，单 X 关闭钮的详情页按 F 无效；手动打之前先用 cheat 强化（默认值即可，不强化弱队既容易死也打不动敌人）；kill_all 一般不会误杀自己人但可能少杀。',
+      '- 经验沉淀：每次任务结束（尤其异常终态/人工介入）后，总结本次经验提醒用户审核；用户通过后写入插件仓库 docs/RULES.md（精华规则同时更新工具描述注入文本），并建议用户反馈/提交（issue）给插件仓库。',
     ].join('\n'),
   })
 

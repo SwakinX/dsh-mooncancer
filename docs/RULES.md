@@ -46,6 +46,45 @@
 - 修改定位按「等级+攻击力」（我方）/「等级+生命值」（敌方），OCR 有误时改失败——先 `battle_state` 核对屏幕识别值，识别数字可能有误。
 - 出现闪退等异常：重启游戏或模拟器；重新进入战斗前**清空记录**。
 
+### 手动介入与故障恢复经验
+
+> 本节内容来自实际运行经验：每次任务结束（尤其异常终态/人工介入）后，AI 会总结经验提醒用户审核，通过后写入本文件；也欢迎用户反馈和提交（issue）补充。
+
+#### 任务启动前强制检查（多开 pid 预登记）
+
+- `status` 中 `device.process == null` 且 `candidates` 多于一个时，任何触发 CE 附加的操作（task start / cheat 等）会弹人工选择窗阻塞任务线程。
+- 确定目标实例 pid：`netstat -ano | findstr <adb端口>` 找占用该端口的 LISTENING pid（比 MuMuManager 显示的 player pid 准，后者是另一进程）。
+- `device connect` 带该 pid 预登记，确认响应 `pid_claimed: true`；**模拟器重启后 pid 会变**，旧预登记失效，必须重新查、重新 connect。
+- start 前三件套：`device.connected == true`、`process.pid` 已预登记且未失效、（battle/first 类）游戏在前台 `in_game`。
+
+#### token 鉴权
+
+- 服务端开启鉴权后，插件 token 不匹配的症状：`status` 正常、其余接口 401「token 无效」（服务升级后常见）。
+- token 可直接在设置里的选项卡复制，更新到插件设置即可（Agent 无工具直接改插件 profile 配置）。
+
+#### task start 假报错
+
+- `task start wait=true` 可能抛 `[object Object]` 但任务实际已被接受——报错后先查 `status`/`events` 再决定重试，盲目重试只会 409 幂等拒绝。
+
+#### Nemu IPC 断连 = 模拟器实例崩溃
+
+- 特征：日志连续 `Failed to call nemu_connect, result=0` + `Connection failed, please check if nemu_folder is correct`，任务以「执行错误」结束（kind=null、无 shots 存档）。
+- 确诊：adb 端口不在 LISTENING。MuMuManager 的 `is_android_started: true` 可能是残影，以 netstat 为准。
+- 恢复流程：`MuMuManager control -v <实例编号> shutdown` → 等 30s → `control -v <实例编号> launch`（实例编号按目标模拟器选，命令通用于所有实例；首次 launch 可能报 -502，再试一次）→ `device connect` 重新预登记新 pid → `kidou` 拉起游戏。
+
+#### first 任务导航
+
+- first 不会自动导航到目标列表：需先**回到终端页面** → 迦勒底之门 → 幕间物语（入口坐标不固定，用 OCR 定位），到位后再 start/resume。
+- 任务运行中手动导航：先 `pause` → 导航 → `resume`。幕间限免时 AP=0，可连续清。
+
+#### 手动战斗操作要点
+
+- **选卡前必须先点攻击按钮**，屏幕上没出现卡片时 `tap_card` 无效。
+- `tap_card` 偶发误开从者/宝具详情页，点右上角 X 关闭；**F 键只能取消带「确定/取消」两个按钮的弹窗**，单 X 关闭钮的详情页按 F 无效。
+- 选敌：pos 1/2/3 对应 NUM4/5/6。
+- **手动打之前先辅组强化**：一般直接用默认值即可——默认值同时抬高攻击和生命，不修改的话弱队既容易死也打不动敌人。
+- `kill_all` 一般不会误杀自己人，但可能**少杀**（编号推算不准时部分敌人清不掉），需要彻底清场时注意核对战场。
+
 ## 确认门与不可逆操作
 
 - 唯一确认门：彩苹果（= 圣晶石）消耗。AI 未经用户明确授权不得消耗；`pre_confirm=true` 仅在已知用户意图时使用（照发审计事件）。
